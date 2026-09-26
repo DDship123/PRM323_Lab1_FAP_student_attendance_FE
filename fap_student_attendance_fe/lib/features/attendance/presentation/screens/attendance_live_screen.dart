@@ -1,8 +1,10 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+
 import '../../../../core/utils/network_info.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -48,14 +50,13 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
     super.dispose();
   }
 
-  bool _showBackendQrImage = true;
-
   /// Tạo nội dung cho mã QR quét qua điện thoại
   String _buildQrPayload(AttendanceSessionModel session) {
     final host = _hostController.text.trim().isNotEmpty
         ? _hostController.text.trim()
         : '192.168.1.101:5000';
-    final scheme = (Uri.base.scheme.isNotEmpty && Uri.base.scheme.startsWith('http'))
+    final scheme =
+        (Uri.base.scheme.isNotEmpty && Uri.base.scheme.startsWith('http'))
         ? Uri.base.scheme
         : 'http';
 
@@ -94,9 +95,16 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.qr_code_scanner, size: 64, color: AppColors.textSecondary),
+                    const Icon(
+                      Icons.qr_code_scanner,
+                      size: 64,
+                      color: AppColors.textSecondary,
+                    ),
                     const SizedBox(height: 20),
-                    Text('Chưa có phiên điểm danh nào đang chạy', style: AppTextStyles.h3),
+                    Text(
+                      'Chưa có phiên điểm danh nào đang chạy',
+                      style: AppTextStyles.h3,
+                    ),
                     const SizedBox(height: 8),
                     Text(
                       'Hãy tạo một phiên học mới để mở mã QR và bắt đầu nhận diện điểm danh.',
@@ -130,14 +138,16 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
                     // ── Left: QR Code ──
                     Expanded(
                       flex: 3,
-                      child: _buildQRSection(context, session, qrPayload, isExpired),
+                      child: _buildQRSection(
+                        context,
+                        session,
+                        qrPayload,
+                        isExpired,
+                      ),
                     ),
                     const SizedBox(width: 24),
                     // ── Right: Stats + Live check-ins ──
-                    Expanded(
-                      flex: 3,
-                      child: _buildStatsSection(context),
-                    ),
+                    Expanded(flex: 3, child: _buildStatsSection(context)),
                   ],
                 ),
               ],
@@ -148,7 +158,11 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
     );
   }
 
-  Widget _buildHeader(BuildContext context, AttendanceSessionModel session, bool isExpired) {
+  Widget _buildHeader(
+    BuildContext context,
+    AttendanceSessionModel session,
+    bool isExpired,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -157,7 +171,9 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                isExpired ? 'PHIÊN ĐIỂM DANH ĐÃ HẾT HẠN' : 'ĐANG ĐIỂM DANH THỜI GIAN THỰC (DYNAMIC TOTP)',
+                isExpired
+                    ? 'PHIÊN ĐIỂM DANH ĐÃ HẾT HẠN'
+                    : 'ĐANG ĐIỂM DANH THỜI GIAN THỰC',
                 style: AppTextStyles.breadcrumb.copyWith(
                   color: isExpired ? AppColors.textSecondary : AppColors.error,
                 ),
@@ -195,9 +211,14 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
                         child: const Text('Hủy'),
                       ),
                       ElevatedButton(
-                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.error),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.error,
+                        ),
                         onPressed: () => Navigator.pop(ctx, true),
-                        child: const Text('Đóng phiên ngay', style: TextStyle(color: Colors.white)),
+                        child: const Text(
+                          'Đóng phiên ngay',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ],
                   ),
@@ -229,12 +250,14 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
     String qrPayload,
     bool isExpired,
   ) {
-    final currentToken = _sessionController.currentQrToken ?? session.currentQrToken ?? '4F3A8B12';
+    final currentToken =
+        _sessionController.currentQrToken ??
+        session.currentQrToken ??
+        '4F3A8B12';
     final tokenRemaining = _sessionController.tokenRemainingSeconds;
     final tokenInterval = _sessionController.tokenIntervalSeconds;
     final tokenProgress = _sessionController.tokenProgress;
     final isStream = _sessionController.isStreamActive;
-    final base64Image = _sessionController.qrCodeBase64 ?? session.qrCodeBase64;
 
     // Màu sắc thanh countdown thay đổi theo độ khẩn cấp (xanh -> cam -> đỏ)
     final Color progressColor = tokenRemaining > 5
@@ -257,15 +280,22 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
               Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 5,
+                    ),
                     decoration: BoxDecoration(
-                      color: isExpired ? AppColors.warningBg : AppColors.successBg,
+                      color: isExpired
+                          ? AppColors.warningBg
+                          : AppColors.successBg,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: Text(
                       isExpired ? 'MÃ QR ĐÃ HẾT HẠN' : 'MÃ QR ĐỘNG ĐANG CHẠY',
                       style: AppTextStyles.labelSmall.copyWith(
-                        color: isExpired ? AppColors.warning : AppColors.success,
+                        color: isExpired
+                            ? AppColors.warning
+                            : AppColors.success,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 0.5,
                       ),
@@ -273,12 +303,19 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
                   ),
                   const SizedBox(width: 8),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
-                      color: isStream ? AppColors.success.withValues(alpha: 0.1) : AppColors.accent.withValues(alpha: 0.1),
+                      color: isStream
+                          ? AppColors.success.withValues(alpha: 0.1)
+                          : AppColors.accent.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(6),
                       border: Border.all(
-                        color: isStream ? AppColors.success.withValues(alpha: 0.3) : AppColors.accent.withValues(alpha: 0.3),
+                        color: isStream
+                            ? AppColors.success.withValues(alpha: 0.3)
+                            : AppColors.accent.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Row(
@@ -287,7 +324,9 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
                         Icon(
                           isStream ? Icons.sensors : Icons.sync,
                           size: 13,
-                          color: isStream ? AppColors.success : AppColors.accent,
+                          color: isStream
+                              ? AppColors.success
+                              : AppColors.accent,
                         ),
                         const SizedBox(width: 4),
                         Text(
@@ -295,7 +334,9 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w700,
-                            color: isStream ? AppColors.success : AppColors.accent,
+                            color: isStream
+                                ? AppColors.success
+                                : AppColors.accent,
                           ),
                         ),
                       ],
@@ -330,11 +371,17 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.timer_outlined, size: 16, color: progressColor),
+                        Icon(
+                          Icons.timer_outlined,
+                          size: 16,
+                          color: progressColor,
+                        ),
                         const SizedBox(width: 6),
                         Text(
                           'Đổi chu kỳ QR mới sau:',
-                          style: AppTextStyles.caption.copyWith(fontWeight: FontWeight.w600),
+                          style: AppTextStyles.caption.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ],
                     ),
@@ -363,7 +410,7 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
           ),
           const SizedBox(height: 14),
 
-          // ── QR Code View (Backend Base64 hoặc QrImageView) ──
+          // ── QR Code View (Chứa liên kết Web điểm danh cho điện thoại quét) ──
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -379,97 +426,20 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
               ],
             ),
             child: SizedBox(
-              width: 220,
-              height: 220,
-              child: (_showBackendQrImage && base64Image != null && base64Image.isNotEmpty)
-                  ? Image.memory(
-                      base64Decode(base64Image.split(',').last),
-                      width: 220,
-                      height: 220,
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) {
-                        return QrImageView(
-                          data: qrPayload,
-                          version: QrVersions.auto,
-                          size: 220,
-                          gapless: true,
-                        );
-                      },
-                    )
-                  : QrImageView(
-                      data: qrPayload,
-                      version: QrVersions.auto,
-                      size: 220,
-                      gapless: true,
-                      errorStateBuilder: (context, error) {
-                        return const Center(child: Text('Lỗi hiển thị QR'));
-                      },
-                    ),
+              width: 240,
+              height: 240,
+              child: QrImageView(
+                data: qrPayload,
+                version: QrVersions.auto,
+                size: 240,
+                gapless: true,
+                errorStateBuilder: (context, error) {
+                  return const Center(child: Text('Lỗi hiển thị QR'));
+                },
+              ),
             ),
           ),
-          const SizedBox(height: 8),
-
-          // Nút đổi chế độ hiển thị QR (TOTP Token vs Web Deep Link)
-          TextButton.icon(
-            onPressed: () {
-              setState(() => _showBackendQrImage = !_showBackendQrImage);
-            },
-            icon: Icon(
-              _showBackendQrImage ? Icons.link : Icons.qr_code_2,
-              size: 16,
-              color: AppColors.accent,
-            ),
-            label: Text(
-              _showBackendQrImage
-                  ? 'Chuyển sang: Mã QR chứa liên kết Web'
-                  : 'Chuyển sang: Mã QR động TOTP (Khuyến nghị)',
-              style: const TextStyle(fontSize: 12, color: AppColors.accent),
-            ),
-          ),
-          const SizedBox(height: 8),
-
-          // ── DYNAMIC QR TOKEN (8 ký tự Hex) ──
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(
-              color: AppColors.accent.withValues(alpha: 0.07),
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.accent.withValues(alpha: 0.25)),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(Icons.token, color: AppColors.accent, size: 20),
-                const SizedBox(width: 8),
-                Text('Mã Dynamic Token: ', style: AppTextStyles.label.copyWith(fontSize: 13)),
-                Text(
-                  currentToken,
-                  style: AppTextStyles.h2.copyWith(
-                    color: AppColors.accent,
-                    letterSpacing: 3,
-                    fontFamily: 'monospace',
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  icon: const Icon(Icons.copy, size: 18, color: AppColors.accent),
-                  tooltip: 'Sao chép mã QR Token 8 ký tự',
-                  onPressed: () {
-                    Clipboard.setData(ClipboardData(text: currentToken));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Đã sao chép Dynamic QR Token vào bộ nhớ tạm!'),
-                        duration: Duration(seconds: 1),
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 16),
 
           // ── PIN CODE Display (Học sinh có thể nhập mã code nếu camera hỏng) ──
           Container(
@@ -485,7 +455,10 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
               children: [
                 const Icon(Icons.pin, color: AppColors.textPrimary, size: 20),
                 const SizedBox(width: 8),
-                Text('Mã PIN 6 số dự phòng: ', style: AppTextStyles.label.copyWith(fontSize: 13)),
+                Text(
+                  'Mã PIN 6 số dự phòng: ',
+                  style: AppTextStyles.label.copyWith(fontSize: 13),
+                ),
                 Text(
                   session.sessionCode ?? '849201',
                   style: AppTextStyles.h3.copyWith(
@@ -496,13 +469,21 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
                 ),
                 const SizedBox(width: 8),
                 IconButton(
-                  icon: const Icon(Icons.copy, size: 18, color: AppColors.textSecondary),
+                  icon: const Icon(
+                    Icons.copy,
+                    size: 18,
+                    color: AppColors.textSecondary,
+                  ),
                   tooltip: 'Sao chép mã PIN 6 số',
                   onPressed: () {
-                    Clipboard.setData(ClipboardData(text: session.sessionCode ?? '849201'));
+                    Clipboard.setData(
+                      ClipboardData(text: session.sessionCode ?? '849201'),
+                    );
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Đã sao chép mã PIN 6 số vào bộ nhớ tạm!'),
+                        content: Text(
+                          'Đã sao chép mã PIN 6 số vào bộ nhớ tạm!',
+                        ),
                         duration: Duration(seconds: 1),
                       ),
                     );
@@ -524,7 +505,11 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
             ),
             child: Row(
               children: [
-                const Icon(Icons.shield_outlined, size: 15, color: AppColors.info),
+                const Icon(
+                  Icons.shield_outlined,
+                  size: 15,
+                  color: AppColors.info,
+                ),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
@@ -591,11 +576,19 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
         Row(
           children: [
             Expanded(
-              child: _buildStatCard('${records.length}', 'Đã điểm danh', AppColors.success),
+              child: _buildStatCard(
+                '${records.length}',
+                'Đã điểm danh',
+                AppColors.success,
+              ),
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: _buildStatCard('Đang mở', 'Trạng thái phiên', AppColors.accent),
+              child: _buildStatCard(
+                'Đang mở',
+                'Trạng thái phiên',
+                AppColors.accent,
+              ),
             ),
           ],
         ),
@@ -617,15 +610,9 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            number,
-            style: AppTextStyles.statNumber.copyWith(color: color),
-          ),
+          Text(number, style: AppTextStyles.statNumber.copyWith(color: color)),
           const SizedBox(height: 4),
-          Text(
-            label,
-            style: AppTextStyles.statLabel,
-          ),
+          Text(label, style: AppTextStyles.statLabel),
         ],
       ),
     );
@@ -683,10 +670,15 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
                     children: [
                       CircleAvatar(
                         radius: 14,
-                        backgroundColor: AppColors.accent.withValues(alpha: 0.1),
+                        backgroundColor: AppColors.accent.withValues(
+                          alpha: 0.1,
+                        ),
                         child: Text(
                           '${index + 1}',
-                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -697,7 +689,10 @@ class _AttendanceLiveScreenState extends State<AttendanceLiveScreen> {
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: AppColors.successBg,
                           borderRadius: BorderRadius.circular(6),
